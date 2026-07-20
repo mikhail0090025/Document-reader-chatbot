@@ -22,12 +22,6 @@ services:
       - HF_HOME=/app/models/huggingface
       - TRANSFORMERS_CACHE=/app/models/huggingface
 
-      # Database
-      - DATABASE_URL=postgresql+psycopg://chatbot:chatbot@postgres:5432/chatbot
-      - JWT_SECRET_KEY=super_secret_key_123456789
-      - JWT_ALGORITHM=HS256
-      - JWT_EXPIRE_MINUTES=1440
-
     volumes:
       - ./chatbot_main_service:/app
       - ./models:/app/models
@@ -38,24 +32,3 @@ services:
       timeout: 10s
       retries: 40
       start_period: 60s
-
-  postgres:
-    image: pgvector/pgvector:pg15
-
-    container_name: chatbot_postgres
-
-    restart: always
-
-    environment:
-      POSTGRES_DB: chatbot
-      POSTGRES_USER: chatbot
-      POSTGRES_PASSWORD: chatbot
-
-    ports:
-      - "5432:5432"
-
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
