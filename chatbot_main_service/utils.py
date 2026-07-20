@@ -1,22 +1,17 @@
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-import numpy as np
 from schemas import Memory, DocumentDecision
 from chat_models import chat_model, embeddings
-from global_context import memory_storage, document_storage, chat_history, web_links
-
-import os
+from global_context import memory_storage, chat_history
 import re
-
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-
-from tqdm.auto import tqdm
-from langchain_community.document_loaders import TextLoader, PyPDFLoader, WebBaseLoader
-
 from prompts.chat_prompt import CHAT_PROMPT
 from prompts.memory_prompt import MEMORY_PROMPT
 from prompts.document_needs_prompt import DOCUMENT_NEEDS_PROMPT
 from prompts.document_prompt import DOCUMENT_PROMPT
+from documents import (
+    retrieve_documents,
+    cosine_similarity,
+)
 
 parser = JsonOutputParser(pydantic_object=Memory)
 
@@ -49,15 +44,6 @@ def remove_thinking(text: str) -> str:
     """
 
     return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
-
-
-# =========================
-# Storage
-# =========================
-
-
-def cosine_similarity(a, b):
-    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
 
 # =========================
@@ -188,164 +174,6 @@ def need_documents(message: str):
         return decision.get("use_documents", False)
 
     return False
-
-
-def load_documents(folder):
-
-    documents = []
-
-    for filename in os.listdir(folder):
-        path = os.path.join(folder, filename)
-
-        if filename.endswith(".txt"):
-            loader = TextLoader(path)
-
-            documents.extend(loader.load())
-
-        elif filename.endswith(".pdf"):
-            loader = PyPDFLoader(path)
-
-            documents.extend(loader.load())
-
-    return documents
-
-
-def load_web_documents(urls):
-
-    documents = []
-
-    for url in urls:
-        loader = WebBaseLoader(url)
-
-        documents.extend(loader.load())
-
-    return documents
-
-
-def split_documents(documents):
-
-    splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=150)
-
-    return splitter.split_documents(documents)
-
-
-def build_document_index(folder):
-
-    global document_storage
-
-    document_storage.clear()
-
-    print(f"Scanning folder: {folder}\n")
-
-    supported_formats = {".txt", ".pdf"}
-
-    all_chunks = []
-
-    # ---------- Loading web pages ----------
-
-    if web_links:
-        print("\nLoading web pages...\n")
-
-        web_documents = load_web_documents(web_links)
-
-        print(f"Web pages loaded: {len(web_documents)}")
-
-        web_chunks = split_documents(web_documents)
-
-        print(f"Web chunks created: {len(web_chunks)}")
-
-        all_chunks.extend(web_chunks)
-
-    document_count = 0
-
-    for filename in os.listdir(folder):
-        path = os.path.join(folder, filename)
-
-        if not os.path.isfile(path):
-            continue
-
-        extension = os.path.splitext(filename)[1].lower()
-
-        if extension not in supported_formats:
-            continue
-
-        document_count += 1
-
-        print(f"[FOUND] {filename}")
-
-        # ---------- Loading ----------
-
-        if extension == ".txt":
-            loader = TextLoader(path, encoding="utf-8")
-
-        elif extension == ".pdf":
-            loader = PyPDFLoader(path)
-
-        documents = loader.load()
-
-        print(f"        Pages/parts loaded: {len(documents)}")
-
-        # ---------- Splitting ----------
-
-        chunks = split_documents(documents)
-
-        print(f"        Chunks created: {len(chunks)}")
-
-        all_chunks.extend(chunks)
-
-    print("\n----------------------")
-    print(f"Documents found: {document_count}")
-    print(f"Total chunks: {len(all_chunks)}")
-    print("----------------------\n")
-
-    if not all_chunks:
-        print("No supported documents found.")
-        return
-
-    # ---------- Embeddings ----------
-
-    print("Generating embeddings...\n")
-
-    for chunk in tqdm(all_chunks, desc="Embedding chunks"):
-        text = chunk.page_content
-
-        embedding = embeddings.embed_query(text)
-
-        document_storage.append(
-            {
-                "text": text,
-                "embedding": embedding,
-                "source": chunk.metadata.get("source", "unknown"),
-                "page": chunk.metadata.get("page", None),
-            }
-        )
-
-    print("\nIndexing complete.")
-    print("----------------------")
-    print(f"Stored embeddings: {len(document_storage)}")
-
-
-def retrieve_documents(question, top_k=5):
-
-    query_embedding = embeddings.embed_query(question)
-
-    results = []
-
-    for item in document_storage:
-        similarity = cosine_similarity(query_embedding, item["embedding"])
-
-        results.append(
-            {
-                "text": item["text"],
-                "source": item["source"],
-                "page": item["page"],
-                "score": similarity,
-            }
-        )
-
-    results.sort(key=lambda x: x["score"], reverse=True)
-
-    return results[:top_k]
 
 
 document_prompt = ChatPromptTemplate.from_messages(

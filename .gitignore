@@ -1,3 +1,5 @@
 .env
 __pycache__/
 *.pyc
+/chatbot_main_service/documents
+/models

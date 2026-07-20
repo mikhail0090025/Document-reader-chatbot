@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Document Reader Chatbot</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', path='/styles.css') }}">
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- ========================================= -->
+    <!-- Sidebar -->
+    <!-- ========================================= -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-header">
+
+            <h2>Documents</h2>
+
+            <label class="upload-button">
+
+                Upload
+
+                <input
+                        id="fileInput"
+                        type="file"
+                        accept=".pdf,.txt"
+                        hidden>
+
+            </label>
+
+        </div>
+
+        <div
+                id="dropZone"
+                class="drop-zone">
+
+            <p>Drop PDF or TXT here</p>
+            <span>or click Upload</span>
+
+        </div>
+
+        <div
+                id="documentsList"
+                class="documents-list">
+
+            <!-- Documents will appear here -->
+
+        </div>
+
+    </aside>
+
+
+    <!-- ========================================= -->
+    <!-- Chat -->
+    <!-- ========================================= -->
+
+    <main class="chat-container">
+
+        <header class="chat-header">
+
+            <h1>Document Reader Chatbot</h1>
+
+        </header>
+
+        <div
+                id="messages"
+                class="messages">
+
+            <!-- Messages -->
+
+        </div>
+
+        <div class="input-container">
+
+            <textarea
+
+                    id="messageInput"
+
+                    placeholder="Ask anything..."
+
+                    rows="2"
+
+            ></textarea>
+
+            <button id="sendButton">
+
+                Send
+
+            </button>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', path='/script.js') }}"></script>
+
+</body>
+</html>

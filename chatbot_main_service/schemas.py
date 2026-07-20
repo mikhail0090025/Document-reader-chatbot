@@ -11,3 +11,11 @@ class DocumentDecision(BaseModel):
     use_documents: bool = Field(
         description="Whether answering requires information from uploaded documents."
     )
+
+class ChatRequest(BaseModel):
+    message: str
+    use_documents_anyway: bool = False
+
+
+class ChatResponse(BaseModel):
+    answer: str
