@@ -13,11 +13,13 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Подключаем шаблоны
 templates = Jinja2Templates(directory="templates")
 
+
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
     return templates.TemplateResponse(
         "index.html", {"request": request, "title": "Главная страница"}
     )
+
 
 @app.get("/health")
 async def health():
