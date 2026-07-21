@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+
+  chatbot_main_service:
+    build:
+      context: ./chatbot_main_service
+      args:
+        HF_TOKEN: ${HF_TOKEN}
+
+    container_name: chatbot_main_service
+    restart: always
+
+    ports:
+      - "8000:8000"
+
+    environment:
+      - HOME=/app
+      - HF_HOME=/app/models/huggingface
+      - TRANSFORMERS_CACHE=/app/models/huggingface
+
+    volumes:
+      - ./chatbot_main_service:/app
+      - ./models:/app/models
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
