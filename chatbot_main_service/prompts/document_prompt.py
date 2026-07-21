@@ -9,4 +9,8 @@ say that the documents do not contain enough information.
 Document context:
 
 {context}
+
+Previous conversation (last messages):
+
+{history}
 """

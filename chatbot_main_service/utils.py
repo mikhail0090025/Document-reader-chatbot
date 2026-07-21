@@ -182,13 +182,15 @@ document_prompt = ChatPromptTemplate.from_messages(
 )
 
 
-def generate_document_answer(message):
+def generate_document_answer(message, history_size=6):
 
     chunks = retrieve_documents(message)
 
     context = "\n\n".join(chunk["text"] for chunk in chunks)
 
-    formatted_prompt = document_prompt.invoke({"context": context, "message": message})
+    history_context = get_chat_context(history_size)
+
+    formatted_prompt = document_prompt.invoke({"context": context, "message": message, "history": history_context})
 
     response = chat_model.invoke(formatted_prompt)
 
@@ -248,10 +250,10 @@ def chat(message: str, use_documents_anyway=False, history_size=4):
     if use_documents:
         print("Using document search")
 
-        answer = remove_thinking(generate_document_answer(message))
+        answer = remove_thinking(generate_document_answer(message, history_size=history_size))
 
     else:
-        history_context = get_chat_context(history_size)
+        history_context = get_chat_context(history_size=history_size)
 
         formatted_prompt = chat_prompt.invoke(
             {"message": message, "memory": memory_context, "history": history_context}
