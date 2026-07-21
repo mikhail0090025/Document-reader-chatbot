@@ -4,6 +4,7 @@ import torch
 from langchain_huggingface import HuggingFaceEmbeddings
 
 model_name = "Qwen/Qwen2.5-3B-Instruct"
+model_name = "Qwen/Qwen2.5-1.5B-Instruct"
 
 CACHE_DIR = "./models"
 

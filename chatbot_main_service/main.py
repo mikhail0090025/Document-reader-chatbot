@@ -6,6 +6,7 @@ from fastapi.responses import HTMLResponse
 print("2")
 from routers.document_router import router as document_router
 from routers.chat_router import router as chat_router
+from routers.web_router import router as web_router
 print("3")
 
 app = FastAPI(title="Simple FastAPI App")
@@ -18,6 +19,7 @@ templates = Jinja2Templates(directory="templates")
 
 app.include_router(document_router)
 app.include_router(chat_router)
+app.include_router(web_router)
 
 
 @app.get("/", response_class=HTMLResponse)

@@ -12,6 +12,7 @@ from documents import (
     retrieve_documents,
     cosine_similarity,
 )
+from global_context import TOP_K
 
 parser = JsonOutputParser(pydantic_object=Memory)
 
@@ -227,7 +228,7 @@ def chat(message: str, use_documents_anyway=False, history_size=4):
         save_memory(new_facts)
 
     # 4. Получаем релевантную память
-    memories = retrieve_memory(message)
+    memories = retrieve_memory(message, top_k=TOP_K)
 
     print("Memories:", memories)
 
