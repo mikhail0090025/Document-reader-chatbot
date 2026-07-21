@@ -1,16 +1,9 @@
-print("111")
 from langchain_community.document_loaders import TextLoader, PyPDFLoader, WebBaseLoader
-print("222")
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-print("333")
 from chat_models import embeddings
-print("444")
 import os
-print("555")
 from tqdm.auto import tqdm
-print("666")
 import numpy as np
-print("777")
 from global_context import document_storage, CHUNK_SIZE, CHUNK_OVERLAP, web_links
 
 def cosine_similarity(a, b):

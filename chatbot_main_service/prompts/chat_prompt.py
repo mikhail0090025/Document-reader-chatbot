@@ -5,7 +5,7 @@ Relevant information about the user:
 
 {memory}
 
-Previous conversation:
+Previous conversation (last messages):
 
 {history}
 

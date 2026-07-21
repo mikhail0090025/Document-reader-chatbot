@@ -1,13 +1,10 @@
-print("1")
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
-print("2")
 from routers.document_router import router as document_router
 from routers.chat_router import router as chat_router
 from routers.web_router import router as web_router
-print("3")
 
 app = FastAPI(title="Simple FastAPI App")
 

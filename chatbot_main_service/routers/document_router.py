@@ -1,6 +1,4 @@
-print("11")
 from pathlib import Path
-print("22")
 
 from fastapi import (
     APIRouter,
@@ -8,19 +6,16 @@ from fastapi import (
     File,
     HTTPException,
 )
-print("33")
 
 from documents import (
     add_document,
     remove_document,
 )
-print("44")
 
 router = APIRouter(
     prefix="/documents",
     tags=["Documents"],
 )
-print("55")
 
 DOCUMENTS_FOLDER = Path("documents")
 DOCUMENTS_FOLDER.mkdir(exist_ok=True)
