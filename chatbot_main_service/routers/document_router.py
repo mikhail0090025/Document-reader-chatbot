@@ -27,10 +27,12 @@ def get_documents():
 
     for file in DOCUMENTS_FOLDER.iterdir():
         if file.is_file():
-            documents.append({
-                "filename": file.name,
-                "size": file.stat().st_size,
-            })
+            documents.append(
+                {
+                    "filename": file.name,
+                    "size": file.stat().st_size,
+                }
+            )
 
     documents.sort(key=lambda x: x["filename"])
 
@@ -38,6 +40,7 @@ def get_documents():
         "count": len(documents),
         "documents": documents,
     }
+
 
 @router.post("/upload")
 async def upload_document(file: UploadFile = File(...)):
