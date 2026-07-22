@@ -6,6 +6,7 @@ from tqdm.auto import tqdm
 import numpy as np
 from global_context import document_storage, CHUNK_SIZE, CHUNK_OVERLAP, web_links
 
+
 def cosine_similarity(a, b):
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
@@ -44,7 +45,9 @@ def load_web_documents(urls):
 
 def split_documents(documents):
 
-    splitter = RecursiveCharacterTextSplitter(chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP
+    )
 
     return splitter.split_documents(documents)
 
@@ -151,6 +154,7 @@ def retrieve_documents(question, top_k=5):
 
     return results[:top_k]
 
+
 def add_web_document(url):
 
     web_links.append(url)
@@ -164,10 +168,7 @@ def add_web_document(url):
     print(f"[WEB ADD] {url}: {len(chunks)} chunks")
 
     for chunk in tqdm(chunks, desc=f"Embedding {url}"):
-
-        embedding = embeddings.embed_query(
-            chunk.page_content
-        )
+        embedding = embeddings.embed_query(chunk.page_content)
 
         document_storage.append(
             {
@@ -183,7 +184,6 @@ def add_web_document(url):
     return len(chunks)
 
 
-
 def remove_web_document(url):
 
     web_links.remove(url)
@@ -193,15 +193,11 @@ def remove_web_document(url):
     before = len(document_storage)
 
     document_storage[:] = [
-        chunk
-        for chunk in document_storage
-        if chunk["document_id"] != url
+        chunk for chunk in document_storage if chunk["document_id"] != url
     ]
 
     removed = before - len(document_storage)
 
-    print(
-        f"[WEB REMOVE] {url}: {removed} chunks"
-    )
+    print(f"[WEB REMOVE] {url}: {removed} chunks")
 
     return removed

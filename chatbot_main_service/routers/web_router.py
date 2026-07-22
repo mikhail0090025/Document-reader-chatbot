@@ -7,12 +7,10 @@ from documents import (
     remove_web_document,
 )
 
-
 router = APIRouter(
     prefix="/web",
     tags=["Web documents"],
 )
-
 
 
 class URLRequest(BaseModel):
@@ -22,19 +20,13 @@ class URLRequest(BaseModel):
 @router.get("/")
 def get_web_documents():
 
-    return {
-        "documents": web_links
-    }
+    return {"documents": web_links}
+
 
 @router.post("/add")
-def add_url(
-    data: URLRequest
-):
+def add_url(data: URLRequest):
 
-    chunks_added = add_web_document(
-        str(data.url)
-    )
-
+    chunks_added = add_web_document(str(data.url))
 
     return {
         "message": "URL added successfully",
@@ -43,23 +35,13 @@ def add_url(
     }
 
 
-
 @router.delete("/remove")
-def remove_url(
-    data: URLRequest
-):
+def remove_url(data: URLRequest):
 
-    chunks_removed = remove_web_document(
-        str(data.url)
-    )
-
+    chunks_removed = remove_web_document(str(data.url))
 
     if chunks_removed == 0:
-        raise HTTPException(
-            status_code=404,
-            detail="URL not found"
-        )
-
+        raise HTTPException(status_code=404, detail="URL not found")
 
     return {
         "message": "URL removed successfully",

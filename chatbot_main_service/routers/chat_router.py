@@ -23,6 +23,7 @@ async def chat_endpoint(request: ChatRequest):
         answer=answer,
     )
 
+
 @router.get("/history")
 def get_chat_history():
 
